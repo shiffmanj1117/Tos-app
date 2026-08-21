@@ -37,7 +37,19 @@ export const TommiOsLoadingScreen: React.FC<TommiOsLoadingScreenProps> = ({
       id="tommi-loading-screen"
       className="relative w-full h-full flex flex-col items-center justify-center bg-radial from-[#1F2833]/50 to-[#0B0C10] select-none p-6"
     >
-      <div className="flex flex-col items-center justify-center max-w-md w-full">
+      {/* Background Cyber Grid */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-15"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(102, 252, 241, 0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(102, 252, 241, 0.08) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      <div className="flex flex-col items-center justify-center max-w-md w-full relative z-10">
         {/* Central Orbital Thinking Component */}
         <div className="relative w-64 h-64 flex items-center justify-center">
           {/* Glowing Pulse Core */}
@@ -77,18 +89,19 @@ export const TommiOsLoadingScreen: React.FC<TommiOsLoadingScreenProps> = ({
             />
           </svg>
 
-          {/* Central Logo and Monospace Typography */}
+          {/* Central 3D Tommi Icon and Monospace Typography */}
           <div className="relative z-10 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#66FCF1] flex items-center justify-center bg-[#0B0C10] shadow-[0_0_15px_rgba(102,252,241,0.4)]">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center filter drop-shadow-[0_0_15px_rgba(102,252,241,0.6)]">
               {!imgError ? (
                 <img
-                  src="/img_app_icon.jpg"
+                  src="/tommi_robot_icon.png"
                   alt="TOMMI OS Core"
+                  referrerPolicy="no-referrer"
                   onError={() => setImgError(true)}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               ) : (
-                <Cpu className="w-8 h-8 text-[#66FCF1] animate-pulse" />
+                <Cpu className="w-10 h-10 text-[#66FCF1] animate-pulse" />
               )}
             </div>
 
@@ -122,14 +135,14 @@ export const TommiOsLoadingScreen: React.FC<TommiOsLoadingScreenProps> = ({
       </div>
 
       {/* Override button for diagnostic escapes */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center px-4">
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center px-4 z-20">
         <button
           type="button"
           id="escape-diagnostics-btn"
           onClick={onDiagnosticsClick}
           className="font-mono text-[11px] font-bold tracking-widest text-[#66FCF1]/60 hover:text-[#66FCF1] transition-colors uppercase px-4 py-2 rounded hover:bg-[#1F2833]/50"
         >
-          ESCAPE SYSTEM OVERRIDE: CHANGE IP / DIAGNOSTICS
+          SYSTEM OVERRIDE: CONFIGURE ADDRESS &amp; DIAGNOSTICS
         </button>
       </div>
     </div>

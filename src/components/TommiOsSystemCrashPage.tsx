@@ -27,14 +27,15 @@ export const TommiOsSystemCrashPage: React.FC<TommiOsSystemCrashPageProps> = ({
 
         {/* Warning Avatar */}
         <div className="relative mt-6 mb-4 w-36 h-36 flex items-center justify-center">
-          <div className="absolute w-28 h-28 rounded-full bg-radial from-[#FF9500]/20 to-transparent blur-sm" />
-          <div className="relative z-10 w-24 h-24 rounded-full overflow-hidden border-2 border-[#FF9500] flex items-center justify-center bg-[#1F2833]">
+          <div className="absolute w-28 h-28 rounded-full bg-radial from-[#FF9500]/25 to-transparent blur-md animate-pulse-slow" />
+          <div className="relative z-10 w-24 h-24 flex items-center justify-center filter drop-shadow-[0_0_12px_rgba(255,149,0,0.5)]">
             {!imgError ? (
               <img
-                src="/img_app_icon.jpg"
+                src="/tommi_robot_icon.png"
                 alt="Warning avatar"
+                referrerPolicy="no-referrer"
                 onError={() => setImgError(true)}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             ) : (
               <AlertTriangle className="w-10 h-10 text-[#FF9500]" />

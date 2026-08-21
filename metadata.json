@@ -1,6 +1,12 @@
 {
   "name": "Tommi OS",
-  "description": "A web viewer for Tommi OS with a custom 404 error page and network troubleshooter.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "description": "A web viewer for Tommi OS with camera, microphone, and fine-grained geolocation permissions, plus Android JS bridge support.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
