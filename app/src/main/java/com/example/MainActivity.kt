@@ -31,6 +31,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -397,7 +398,13 @@ fun TommiOsApp() {
           exit = fadeOut(animationSpec = tween(700)),
           modifier = Modifier.fillMaxSize()
         ) {
-          TommiOsLoadingScreen()
+          TommiOsLoadingScreen(
+            onDiagnosticsClick = {
+              webViewInstance?.stopLoading()
+              isError = true
+              isLoading = false
+            }
+          )
         }
 
         // Immersive 404 Cyberpunk Error Screen overlay
@@ -425,45 +432,127 @@ fun TommiOsApp() {
     }
   }
 
-  // URL Config dialog for smart network troubleshooting
-  if (showUrlConfigDialog) {
-    AlertDialog(
-      onDismissRequest = { showUrlConfigDialog = false },
-      containerColor = Color(0xFF1F2833),
-      titleContentColor = Color(0xFF66FCF1),
-      textContentColor = Color(0xFFC5C6C7),
-      title = {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Icon(
-            imageVector = Icons.Default.Settings,
-            contentDescription = null,
-            tint = Color(0xFF66FCF1),
-            modifier = Modifier.size(24.dp)
-          )
-          Spacer(modifier = Modifier.width(8.dp))
+  // URL Config inline overlay for smart network troubleshooting (bypasses emulator dialog freeze bugs)
+  AnimatedVisibility(
+    visible = showUrlConfigDialog,
+    enter = fadeIn(animationSpec = tween(300)),
+    exit = fadeOut(animationSpec = tween(300)),
+    modifier = Modifier.fillMaxSize()
+  ) {
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(Color(0xE60B0C10)) // 90% opacity deep black/cyan background
+        .clickable(
+          indication = null,
+          interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+        ) { /* Consume clicks to prevent background leakage */ }
+        .padding(16.dp),
+      contentAlignment = Alignment.Center
+    ) {
+      Card(
+        modifier = Modifier
+          .fillMaxWidth()
+          .wrapContentHeight()
+          .border(BorderStroke(1.dp, Color(0xFF66FCF1)), shape = RoundedCornerShape(12.dp)),
+        colors = CardDefaults.cardColors(
+          containerColor = Color(0xFF1F2833)
+        ),
+        shape = RoundedCornerShape(12.dp)
+      ) {
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp)
+            .verticalScroll(rememberScrollState())
+        ) {
+          // Header
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+          ) {
+            Icon(
+              imageVector = Icons.Default.Settings,
+              contentDescription = null,
+              tint = Color(0xFF66FCF1),
+              modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+              text = "CONFIGURE CONNECTION",
+              color = Color(0xFF66FCF1),
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Bold,
+              fontFamily = FontFamily.Monospace,
+              letterSpacing = 1.sp
+            )
+          }
+
+          // Warning / Helpful description
           Text(
-            text = "Configure Connection",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace
-          )
-        }
-      },
-      text = {
-        Column(modifier = Modifier.fillMaxWidth()) {
-          Text(
-            text = "Android devices can struggle resolving '.local' hostnames. If you are running a server on your host machine, use 'http://10.0.2.2:3000' (default Android Emulator gateway) or your host machine's IP (e.g. http://192.168.1.100:3000).",
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
+            text = "Android emulators and local devices can struggle to resolve '.local' DNS names. If connection fails, configure a direct IP address or use the default gateway loopback to connect to your host server.",
+            fontSize = 13.sp,
+            lineHeight = 18.sp,
             color = Color(0xFFC5C6C7),
+            fontFamily = FontFamily.Monospace,
             modifier = Modifier.padding(bottom = 16.dp)
           )
-          
+
+          // Pre-defined quick shortcuts
+          Text(
+            text = "QUICK SHORTCUTS:",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF45A29E),
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.padding(bottom = 6.dp)
+          )
+
+          Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+          ) {
+            // Local Emulator Gateway Option
+            Button(
+              onClick = { tempUrlInput = "http://10.0.2.2:3000" },
+              colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0B0C10),
+                contentColor = Color(0xFF66FCF1)
+              ),
+              border = BorderStroke(1.dp, Color(0xFF45A29E)),
+              modifier = Modifier.weight(1f),
+              contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("EMULATOR HOST", fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text("10.0.2.2:3000", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color(0xFFC5C6C7))
+              }
+            }
+
+            // Default Option
+            Button(
+              onClick = { tempUrlInput = "https://tommi-os.local:3000" },
+              colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0B0C10),
+                contentColor = Color(0xFF66FCF1)
+              ),
+              border = BorderStroke(1.dp, Color(0xFF45A29E)),
+              modifier = Modifier.weight(1f),
+              contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("DEFAULT HOST", fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text("tommi-os.local:3000", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color(0xFFC5C6C7))
+              }
+            }
+          }
+
+          // Text Field for Input
           OutlinedTextField(
             value = tempUrlInput,
             onValueChange = { tempUrlInput = it },
-            label = { Text("Tommi OS Address", color = Color(0xFF66FCF1)) },
-            placeholder = { Text("https://tommi-os.local:3000") },
+            label = { Text("Tommi OS Address", color = Color(0xFF66FCF1), fontFamily = FontFamily.Monospace) },
+            placeholder = { Text("https://tommi-os.local:3000", fontFamily = FontFamily.Monospace) },
             colors = OutlinedTextFieldDefaults.colors(
               focusedBorderColor = Color(0xFF66FCF1),
               unfocusedBorderColor = Color(0xFF45A29E),
@@ -481,41 +570,49 @@ fun TommiOsApp() {
               .fillMaxWidth()
               .testTag("url_input_field")
           )
-        }
-      },
-      confirmButton = {
-        Button(
-          onClick = {
-            if (tempUrlInput.isNotBlank()) {
-              targetUrl = tempUrlInput.trim()
-              sharedPref.edit().putString("target_url", targetUrl).apply()
-              showUrlConfigDialog = false
-              
-              // Trigger reload immediately
-              isError = false
-              isLoading = true
-              loadProgress = 0
-              webViewInstance?.loadUrl(targetUrl)
+
+          Spacer(modifier = Modifier.height(24.dp))
+
+          // Dialog Actions (Buttons)
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+          ) {
+            TextButton(
+              onClick = { showUrlConfigDialog = false },
+              colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFC5C6C7)),
+              modifier = Modifier.padding(end = 8.dp)
+            ) {
+              Text("CANCEL", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
             }
-          },
-          colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF66FCF1),
-            contentColor = Color(0xFF0B0C10)
-          ),
-          modifier = Modifier.testTag("save_url_button")
-        ) {
-          Text("Save & Connect", fontWeight = FontWeight.Bold)
-        }
-      },
-      dismissButton = {
-        TextButton(
-          onClick = { showUrlConfigDialog = false },
-          colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFC5C6C7))
-        ) {
-          Text("Cancel")
+
+            Button(
+              onClick = {
+                if (tempUrlInput.isNotBlank()) {
+                  targetUrl = tempUrlInput.trim()
+                  sharedPref.edit().putString("target_url", targetUrl).apply()
+                  showUrlConfigDialog = false
+                  
+                  // Trigger reload immediately
+                  isError = false
+                  isLoading = true
+                  loadProgress = 0
+                  webViewInstance?.loadUrl(targetUrl)
+                }
+              },
+              colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF66FCF1),
+                contentColor = Color(0xFF0B0C10)
+              ),
+              shape = RoundedCornerShape(6.dp),
+              modifier = Modifier.testTag("save_url_button")
+            ) {
+              Text("SAVE & CONNECT", fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+            }
+          }
         }
       }
-    )
+    }
   }
 }
 
@@ -1013,7 +1110,7 @@ fun rememberSafeImagePainter(id: Int, fallbackIcon: androidx.compose.ui.graphics
 }
 
 @Composable
-fun TommiOsLoadingScreen() {
+fun TommiOsLoadingScreen(onDiagnosticsClick: () -> Unit) {
   val tickerMessages = listOf(
     "TOMMI IS INITIALIZING...",
     "> POWERING UP COGNITIVE CORE",
@@ -1259,6 +1356,24 @@ fun TommiOsLoadingScreen() {
             )
         )
       }
+    }
+
+    // Elegant override button for users whose connection/host is unreachable or emulator is stalling
+    androidx.compose.material3.TextButton(
+      onClick = onDiagnosticsClick,
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .padding(bottom = 32.dp)
+        .testTag("escape_diagnostics_button")
+    ) {
+      Text(
+        text = "[ ESCAPE SYSTEM OVERRIDE: CHANGE IP / DIAGNOSTICS ]",
+        color = Color(0xFF66FCF1).copy(alpha = 0.55f),
+        fontSize = 11.sp,
+        fontFamily = FontFamily.Monospace,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 1.5.sp
+      )
     }
   }
 }
