@@ -132,6 +132,18 @@ fun TommiOsApp() {
     webViewInstance?.goBack()
   }
 
+  // Smart Network Timeout System: If loading takes longer than 8 seconds, fallback to the error page gracefully.
+  LaunchedEffect(targetUrl, isLoading) {
+    if (isLoading) {
+      kotlinx.coroutines.delay(8000) // 8 seconds timeout
+      if (isLoading && !isError) {
+        webViewInstance?.stopLoading()
+        isError = true
+        isLoading = false
+      }
+    }
+  }
+
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
@@ -440,7 +452,7 @@ fun TommiOsApp() {
       text = {
         Column(modifier = Modifier.fillMaxWidth()) {
           Text(
-            text = "Android devices can struggle resolving '.local' hostnames on some routers. If connection fails, try using your host machine's local IP address (e.g. http://192.168.1.100:3000).",
+            text = "Android devices can struggle resolving '.local' hostnames. If you are running a server on your host machine, use 'http://10.0.2.2:3000' (default Android Emulator gateway) or your host machine's IP (e.g. http://192.168.1.100:3000).",
             fontSize = 12.sp,
             lineHeight = 16.sp,
             color = Color(0xFFC5C6C7),
