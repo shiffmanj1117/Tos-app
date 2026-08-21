@@ -63,6 +63,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -156,7 +157,7 @@ fun TommiOsApp() {
             horizontalArrangement = Arrangement.Center
           ) {
             Text(
-              text = "TOMMI OS",
+              text = stringResource(R.string.title_tommi_os),
               color = Color(0xFF66FCF1),
               fontSize = 16.sp,
               fontWeight = FontWeight.Bold,
@@ -479,7 +480,7 @@ fun TommiOsApp() {
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-              text = "CONFIGURE CONNECTION",
+              text = stringResource(R.string.dialog_configure_connection),
               color = Color(0xFF66FCF1),
               fontSize = 18.sp,
               fontWeight = FontWeight.Bold,
@@ -490,7 +491,7 @@ fun TommiOsApp() {
 
           // Warning / Helpful description
           Text(
-            text = "Android emulators and local devices can struggle to resolve '.local' DNS names. If connection fails, configure a direct IP address or use the default gateway loopback to connect to your host server.",
+            text = stringResource(R.string.dialog_connection_warning),
             fontSize = 13.sp,
             lineHeight = 18.sp,
             color = Color(0xFFC5C6C7),
@@ -500,7 +501,7 @@ fun TommiOsApp() {
 
           // Pre-defined quick shortcuts
           Text(
-            text = "QUICK SHORTCUTS:",
+            text = stringResource(R.string.dialog_quick_shortcuts),
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF45A29E),
@@ -524,7 +525,7 @@ fun TommiOsApp() {
               contentPadding = PaddingValues(vertical = 8.dp)
             ) {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("EMULATOR HOST", fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text(stringResource(R.string.button_emulator_host), fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("10.0.2.2:3000", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color(0xFFC5C6C7))
               }
             }
@@ -541,7 +542,7 @@ fun TommiOsApp() {
               contentPadding = PaddingValues(vertical = 8.dp)
             ) {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("DEFAULT HOST", fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text(stringResource(R.string.button_default_host), fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("tommi-os.local:3000", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color(0xFFC5C6C7))
               }
             }
@@ -551,8 +552,8 @@ fun TommiOsApp() {
           OutlinedTextField(
             value = tempUrlInput,
             onValueChange = { tempUrlInput = it },
-            label = { Text("Tommi OS Address", color = Color(0xFF66FCF1), fontFamily = FontFamily.Monospace) },
-            placeholder = { Text("https://tommi-os.local:3000", fontFamily = FontFamily.Monospace) },
+            label = { Text(stringResource(R.string.label_tommi_address), color = Color(0xFF66FCF1), fontFamily = FontFamily.Monospace) },
+            placeholder = { Text(stringResource(R.string.placeholder_tommi_address), fontFamily = FontFamily.Monospace) },
             colors = OutlinedTextFieldDefaults.colors(
               focusedBorderColor = Color(0xFF66FCF1),
               unfocusedBorderColor = Color(0xFF45A29E),
@@ -583,7 +584,7 @@ fun TommiOsApp() {
               colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFC5C6C7)),
               modifier = Modifier.padding(end = 8.dp)
             ) {
-              Text("CANCEL", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+              Text(stringResource(R.string.button_cancel), fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
             }
 
             Button(
@@ -607,7 +608,7 @@ fun TommiOsApp() {
               shape = RoundedCornerShape(6.dp),
               modifier = Modifier.testTag("save_url_button")
             ) {
-              Text("SAVE & CONNECT", fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+              Text(stringResource(R.string.button_save_connect), fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
             }
           }
         }
@@ -747,7 +748,7 @@ fun TommiOsErrorPage(
 
     // Title
     Text(
-      text = "Tommi OS Not Found",
+      text = stringResource(R.string.error_tommi_not_found),
       color = Color.White,
       fontSize = 24.sp,
       fontWeight = FontWeight.Bold,
@@ -759,7 +760,7 @@ fun TommiOsErrorPage(
 
     // Subtitle showing unreachable address
     Text(
-      text = "Could not connect to $currentUrl",
+      text = stringResource(R.string.error_could_not_connect, currentUrl),
       color = Color(0xFFC5C6C7).copy(alpha = 0.7f),
       fontSize = 13.sp,
       fontFamily = FontFamily.Monospace,
@@ -793,11 +794,11 @@ fun TommiOsErrorPage(
           )
           Spacer(modifier = Modifier.width(8.dp))
           Text(
-            text = "TROUBLESHOOTING CHECKLIST",
+            text = stringResource(R.string.troubleshooting_checklist_title),
             color = Color(0xFF66FCF1),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp,
+            letterSpacing = 1.0.sp,
             fontFamily = FontFamily.Monospace
           )
         }
@@ -805,25 +806,25 @@ fun TommiOsErrorPage(
         Divider(color = Color(0xFF45A29E).copy(alpha = 0.2f), modifier = Modifier.padding(bottom = 16.dp))
 
         TroubleshootItem(
-          number = "1",
-          title = "Check the Router",
-          desc = "Verify your phone is connected to the same Wi-Fi network as the Tommi OS server."
+          number = stringResource(R.string.troubleshoot_step_1_num),
+          title = stringResource(R.string.troubleshoot_step_1_title),
+          desc = stringResource(R.string.troubleshoot_step_1_desc)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TroubleshootItem(
-          number = "2",
-          title = "Check Power Connection",
-          desc = "Ensure the Tommi OS host machine is fully booted, running, and plugged into power."
+          number = stringResource(R.string.troubleshoot_step_2_num),
+          title = stringResource(R.string.troubleshoot_step_2_title),
+          desc = stringResource(R.string.troubleshoot_step_2_desc)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TroubleshootItem(
-          number = "3",
-          title = "Verify Port & Firewall",
-          desc = "Ensure that service port 3000 is open and not blocked by the host machine's firewall."
+          number = stringResource(R.string.troubleshoot_step_3_num),
+          title = stringResource(R.string.troubleshoot_step_3_title),
+          desc = stringResource(R.string.troubleshoot_step_3_desc)
         )
       }
     }
@@ -854,7 +855,7 @@ fun TommiOsErrorPage(
           modifier = Modifier.size(18.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text("Change IP", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Text(stringResource(R.string.button_change_ip), fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
       }
 
       // Reconnect/Retry Filled Button
@@ -876,7 +877,7 @@ fun TommiOsErrorPage(
           modifier = Modifier.size(18.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text("Reconnect", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+        Text(stringResource(R.string.button_reconnect), fontWeight = FontWeight.Bold, fontSize = 14.sp)
       }
     }
   }
@@ -949,7 +950,7 @@ fun TommiOsSystemCrashPage(
         .padding(horizontal = 12.dp, vertical = 4.dp)
     ) {
       Text(
-        text = "SYSTEM COMPATIBILITY ALERTER",
+        text = stringResource(R.string.crash_alert_title),
         color = Color(0xFFFF9500),
         fontSize = 11.sp,
         fontWeight = FontWeight.Bold,
@@ -992,7 +993,7 @@ fun TommiOsSystemCrashPage(
     Spacer(modifier = Modifier.height(24.dp))
 
     Text(
-      text = "Android 16 WebView Issue",
+      text = stringResource(R.string.crash_webview_title),
       color = Color.White,
       fontSize = 20.sp,
       fontWeight = FontWeight.Bold,
@@ -1002,7 +1003,7 @@ fun TommiOsSystemCrashPage(
     Spacer(modifier = Modifier.height(8.dp))
 
     Text(
-      text = "The device's built-in Android System WebView component failed to initialize securely.",
+      text = stringResource(R.string.crash_webview_desc),
       color = Color(0xFFC5C6C7),
       fontSize = 13.sp,
       textAlign = TextAlign.Center,
@@ -1017,7 +1018,7 @@ fun TommiOsSystemCrashPage(
       modifier = Modifier.fillMaxWidth()
     ) {
       Text(
-        text = "Details: $errorMessage",
+        text = stringResource(R.string.crash_details, errorMessage),
         color = Color(0xFFFF9500),
         fontSize = 12.sp,
         fontFamily = FontFamily.Monospace,
@@ -1036,7 +1037,7 @@ fun TommiOsSystemCrashPage(
     ) {
       Column(modifier = Modifier.padding(20.dp)) {
         Text(
-          text = "HOW TO SOLVE THIS",
+          text = stringResource(R.string.crash_how_to_solve),
           color = Color(0xFFFF9500),
           fontSize = 12.sp,
           fontWeight = FontWeight.Bold,
@@ -1045,25 +1046,25 @@ fun TommiOsSystemCrashPage(
         )
 
         TroubleshootItem(
-          number = "1",
-          title = "Update System WebView",
-          desc = "Go to Google Play Store, search for 'Android System WebView', and ensure it is updated to the latest stable release."
+          number = stringResource(R.string.crash_step_1_num),
+          title = stringResource(R.string.crash_step_1_title),
+          desc = stringResource(R.string.crash_step_1_desc)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         TroubleshootItem(
-          number = "2",
-          title = "Check Play Store Chrome",
-          desc = "Sometimes updating Google Chrome on Android 16 also updates the shared WebView renderer engine."
+          number = stringResource(R.string.crash_step_2_num),
+          title = stringResource(R.string.crash_step_2_title),
+          desc = stringResource(R.string.crash_step_2_desc)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         TroubleshootItem(
-          number = "3",
-          title = "Device System Update",
-          desc = "Verify if a new Android 16 system software or security update is available to fix framework resource redirect bugs."
+          number = stringResource(R.string.crash_step_3_num),
+          title = stringResource(R.string.crash_step_3_title),
+          desc = stringResource(R.string.crash_step_3_desc)
         )
       }
     }
@@ -1087,7 +1088,7 @@ fun TommiOsSystemCrashPage(
         modifier = Modifier.size(18.dp)
       )
       Spacer(modifier = Modifier.width(8.dp))
-      Text("Retry Initialization", fontWeight = FontWeight.Bold)
+      Text(stringResource(R.string.button_retry_initialization), fontWeight = FontWeight.Bold)
     }
   }
 }
@@ -1112,15 +1113,15 @@ fun rememberSafeImagePainter(id: Int, fallbackIcon: androidx.compose.ui.graphics
 @Composable
 fun TommiOsLoadingScreen(onDiagnosticsClick: () -> Unit) {
   val tickerMessages = listOf(
-    "TOMMI IS INITIALIZING...",
-    "> POWERING UP COGNITIVE CORE",
-    "> LOADING LOCAL INTELLIGENCE",
-    "> INITIALIZING MEMORY",
-    "> CONNECTING VISION SYSTEM",
-    "> CALIBRATING VOICE ENGINE",
-    "> CHECKING SYSTEM STATUS",
-    "> PREPARING TOMMI",
-    "> COGNITIVE SYSTEM ONLINE"
+    stringResource(R.string.ticker_initializing),
+    stringResource(R.string.ticker_powering_up),
+    stringResource(R.string.ticker_loading_local),
+    stringResource(R.string.ticker_initializing_memory),
+    stringResource(R.string.ticker_connecting_vision),
+    stringResource(R.string.ticker_calibrating_voice),
+    stringResource(R.string.ticker_checking_status),
+    stringResource(R.string.ticker_preparing),
+    stringResource(R.string.ticker_system_online)
   )
 
   var currentMessageIndex by remember { mutableStateOf(0) }
@@ -1367,7 +1368,7 @@ fun TommiOsLoadingScreen(onDiagnosticsClick: () -> Unit) {
         .testTag("escape_diagnostics_button")
     ) {
       Text(
-        text = "[ ESCAPE SYSTEM OVERRIDE: CHANGE IP / DIAGNOSTICS ]",
+        text = stringResource(R.string.button_escape_override),
         color = Color(0xFF66FCF1).copy(alpha = 0.55f),
         fontSize = 11.sp,
         fontFamily = FontFamily.Monospace,
