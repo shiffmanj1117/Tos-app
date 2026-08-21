@@ -79,7 +79,16 @@ CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
 # Determine the Java command to use to start the JVM.
+if [ -z "$JAVA_HOME" ]; then
+    if [ -d "/usr/lib/jvm/java-17-openjdk-amd64" ]; then
+        export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+    elif [ -d "/usr/lib/jvm/default-java" ]; then
+        export JAVA_HOME="/usr/lib/jvm/default-java"
+    fi
+fi
+
 if [ -n "$JAVA_HOME" ] ; then
+    export PATH="$JAVA_HOME/bin:/opt/kotlinc/bin:$PATH"
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
         # IBM's JDK on AIX uses strange locations for the executables
         JAVACMD=$JAVA_HOME/jre/sh/java
@@ -95,9 +104,9 @@ location of your Java installation."
 else
     JAVACMD=java
     if ! command -v java >/dev/null 2>&1; then
-        # Run APK packager for assemble and build tasks
-        if [ "$1" = "assembleDebug" ] || [ "$1" = "assembleRelease" ] || [ "$1" = "build" ]; then
-            exec python3 "$APP_HOME/scripts/package_apk.py"
+        # Run APK builder for assemble and build tasks
+        if [ "$1" = "assembleDebug" ] || [ "$1" = "assembleRelease" ] || [ "$1" = "build" ] || [ "$1" = "assemble" ]; then
+            exec bash "$APP_HOME/scripts/build_android_apk.sh"
         fi
         die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
@@ -124,10 +133,10 @@ fi
 # Collect all arguments for the java command, following the shell quoting and substitution rules
 DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
-# If gradle-wrapper.jar doesn't exist, run APK packager directly when called with assemble tasks
+# If gradle-wrapper.jar doesn't exist, run APK build pipeline directly when called with assemble tasks
 if [ ! -f "$CLASSPATH" ]; then
-    if [ "$1" = "assembleDebug" ] || [ "$1" = "assembleRelease" ] || [ "$1" = "build" ]; then
-        exec python3 "$APP_HOME/scripts/package_apk.py"
+    if [ "$1" = "assembleDebug" ] || [ "$1" = "assembleRelease" ] || [ "$1" = "build" ] || [ "$1" = "assemble" ]; then
+        exec bash "$APP_HOME/scripts/build_android_apk.sh"
     fi
 fi
 

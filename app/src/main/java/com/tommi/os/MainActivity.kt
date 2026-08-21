@@ -1,7 +1,10 @@
 package com.tommi.os
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -9,35 +12,15 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.webkit.WebSettings
 import android.webkit.WebView
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     private lateinit var webView: WebView
     private lateinit var chromeClient: TommiWebChromeClient
 
-    private val fileChooserLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val uris = result.data?.data?.let { arrayOf(it) }
-            ?: result.data?.clipData?.let { clip ->
-                Array(clip.itemCount) { i -> clip.getItemAt(i).uri }
-            }
-        chromeClient.filePathCallback?.onReceiveValue(uris)
-        chromeClient.filePathCallback = null
-    }
-
-    private val permissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        // Handle runtime permissions
-        val granted = permissions.entries.all { it.value }
-        if (granted) {
-            webView.reload()
-        }
+    companion object {
+        private const val REQUEST_FILE_CHOOSER = 1001
+        private const val REQUEST_PERMISSIONS = 1002
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         setupImmersiveMode()
         setupWebView()
         requestHardwarePermissions()
-        setupBackNavigation()
     }
 
     private fun setupImmersiveMode() {
@@ -74,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupWebView() {
         webView = findViewById(R.id.webView)
         chromeClient = TommiWebChromeClient { intent ->
-            fileChooserLauncher.launch(intent)
+            startActivityForResult(intent, REQUEST_FILE_CHOOSER)
         }
 
         webView.webChromeClient = chromeClient
@@ -107,33 +89,62 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestHardwarePermissions() {
-        val permissions = mutableListOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-
-        val ungranted = permissions.filter {
-            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
-        }
-
-        if (ungranted.isNotEmpty()) {
-            permissionsLauncher.launch(ungranted.toTypedArray())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val permissions = arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            val ungranted = permissions.filter {
+                checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+            }
+            if (ungranted.isNotEmpty()) {
+                requestPermissions(ungranted.toTypedArray(), REQUEST_PERMISSIONS)
+            }
         }
     }
 
-    private fun setupBackNavigation() {
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (webView.canGoBack()) {
-                    webView.goBack()
-                } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_PERMISSIONS) {
+            val anyGranted = grantResults.any { it == PackageManager.PERMISSION_GRANTED }
+            if (anyGranted) {
+                webView.reload()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_FILE_CHOOSER) {
+            var results: Array<Uri>? = null
+            if (resultCode == RESULT_OK && data != null) {
+                val dataString = data.dataString
+                val clipData = data.clipData
+                if (clipData != null) {
+                    results = Array(clipData.itemCount) { i -> clipData.getItemAt(i).uri }
+                } else if (dataString != null) {
+                    results = arrayOf(Uri.parse(dataString))
                 }
             }
-        })
+            chromeClient.filePathCallback?.onReceiveValue(results)
+            chromeClient.filePathCallback = null
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            @Suppress("DEPRECATION")
+            super.onBackPressed()
+        }
     }
 
     override fun onResume() {
