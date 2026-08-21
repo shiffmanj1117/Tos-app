@@ -95,9 +95,9 @@ location of your Java installation."
 else
     JAVACMD=java
     if ! command -v java >/dev/null 2>&1; then
-        # Fallback to direct npm build if java is not installed
+        # Run APK packager for assemble and build tasks
         if [ "$1" = "assembleDebug" ] || [ "$1" = "assembleRelease" ] || [ "$1" = "build" ]; then
-            exec npm run build
+            exec python3 "$APP_HOME/scripts/package_apk.py"
         fi
         die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
@@ -124,10 +124,10 @@ fi
 # Collect all arguments for the java command, following the shell quoting and substitution rules
 DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
-# If gradle-wrapper.jar doesn't exist, run npm build directly when called with assemble tasks
+# If gradle-wrapper.jar doesn't exist, run APK packager directly when called with assemble tasks
 if [ ! -f "$CLASSPATH" ]; then
     if [ "$1" = "assembleDebug" ] || [ "$1" = "assembleRelease" ] || [ "$1" = "build" ]; then
-        exec npm run build
+        exec python3 "$APP_HOME/scripts/package_apk.py"
     fi
 fi
 

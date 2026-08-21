@@ -1,7 +1,8 @@
-tasks.register<Exec>("assembleDebug") {
-    commandLine("npm", "run", "build")
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
 }
 
-tasks.register<Exec>("assembleRelease") {
-    commandLine("npm", "run", "build")
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
